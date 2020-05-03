@@ -1,5 +1,6 @@
 from reader.scripts.StdfToXml import StdfToXml
 from xml.dom import minidom
+import xlsxwriter
 
 files = ['./data/demofile.stdf', './data/lot2.stdf', './data/lot3.stdf']
 data = []
@@ -30,3 +31,18 @@ for file in files:
     }
     data.append(result)
 print(data)
+
+fuckinWorkbook = xlsxwriter.Workbook('./data/Test_Results.xlsx')
+sheet = fuckinWorkbook.add_worksheet()
+
+waferNum = [3, 4, 5]
+yieldValue = [100, 20, 35]
+
+sheet.write("C1", "Lot")
+sheet.write("D1", "Wafer")
+sheet.write("E1", "Yield")
+
+for item in range(len(waferNum)):
+    sheet.write(item+1, 3, waferNum[item])
+    sheet.write(item+1, 4, yieldValue[item])
+fuckinWorkbook.close()
