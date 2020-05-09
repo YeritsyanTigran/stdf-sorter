@@ -13,36 +13,36 @@ def isKthBitSet(n, k):
         return False
 
 
-def takeResult(elem):
-    return elem['yield']
-
-
 for file in files:
     xmlname = StdfToXml.process_file(file)
     root = minidom.parse(xmlname)
     count = 0
     elements = root.getElementsByTagName('Ptr')
-    for prt in elements:
-        value = int(prt.attributes['TEST_FLG'].value)
+    for ptr in elements:
+        value = int(ptr.attributes['TEST_FLG'].value)
         if isKthBitSet(value, 1):
             count += 1
+    wafer_id = root.getElementsByTagName("Wrr")[0].attributes["WAFER_ID"].value
+    lot_id = root.getElementsByTagName("Mir")[0].attributes["LOT_ID"].value
     result = {
-        "yield": (elements.length - count) / elements.length
+        "yield": "{:.2f}".format(((elements.length - count) / elements.length)*100)+"%",
+        "wafer_id": wafer_id,
+        "lot_id": lot_id
     }
     data.append(result)
 print(data)
 
-fuckinWorkbook = xlsxwriter.Workbook('./data/Test_Results.xlsx')
-sheet = fuckinWorkbook.add_worksheet()
+testWorkbook = xlsxwriter.Workbook('./data/Test_Results.xlsx')
+sheet = testWorkbook.add_worksheet()
 
-waferNum = [3, 4, 5]
-yieldValue = [100, 20, 35]
-
+sheet.write("A1", "Technology")
+sheet.write("B1", "Layout")
 sheet.write("C1", "Lot")
 sheet.write("D1", "Wafer")
 sheet.write("E1", "Yield")
 
-for item in range(len(waferNum)):
-    sheet.write(item+1, 3, waferNum[item])
-    sheet.write(item+1, 4, yieldValue[item])
-fuckinWorkbook.close()
+for item in range(len(data)):
+    sheet.write(item + 1, 2, data[item]["lot_id"])
+    sheet.write(item + 1, 3, data[item]["wafer_id"])
+    sheet.write(item+1, 4, data[item]["yield"])
+testWorkbook.close()
